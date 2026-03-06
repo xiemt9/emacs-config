@@ -5,8 +5,7 @@
 ;; Ivy设置
 (use-package ivy
   :diminish
-  :defer 1
-  :demand
+  :defer 0.2
   :hook (after-init . ivy-mode)
   :config
   (ivy-mode 1)
