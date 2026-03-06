@@ -5,15 +5,16 @@
 ;; LSP模式设置
 (use-package lsp-mode
   :ensure t
+  :defer t
   :init
   ;; 设置lsp-command-keymap的前缀
   (setq lsp-keymap-prefix "C-c l")
   :hook (;; 各种模式启动LSP
-         (c-mode . lsp)
-         (python-mode . lsp)
+         (c-mode . lsp-deferred)
+         (python-mode . lsp-deferred)
          ;; which-key集成
          (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp
+  :commands (lsp lsp-deferred)
   :config
   ;; 性能优化
   (setq read-process-output-max (* 1024 1024)) ;; 1MB
@@ -30,4 +31,3 @@
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here
-

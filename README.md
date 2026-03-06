@@ -7,6 +7,7 @@
 ```
 ~/.emacs.d/
 ├── init.el                 # 主入口文件
+├── early-init.el           # 启动前优化（GC、package初始化）
 ├── custom-vars.el          # 自定义变量文件
 ├── lisp/                   # 核心配置文件目录
 │   ├── init-core.el        # 核心设置(基础设置、性能优化等)
@@ -42,8 +43,16 @@
 
 - 使用`use-package`进行包管理
 - 配置包源：MELPA、Org、ELPA
+- 仅在首次安装 `use-package` 时刷新包索引，避免每次启动阻塞
 - 窗口管理：ace-window
 - 键绑定提示：which-key
+
+### 启动优化 (early-init.el + init.el)
+
+- 在 `early-init.el` 禁用启动时自动 package 加载
+- 启动阶段临时提高 GC 阈值，启动完成后恢复
+- 在 `init.el` 中仅保留核心模块同步加载
+- 将补全、LSP、语言/文本/工具模块放到空闲时延迟加载
 
 ### 界面设置 (init-ui.el)
 

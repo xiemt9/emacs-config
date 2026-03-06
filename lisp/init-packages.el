@@ -9,15 +9,16 @@
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
 
 ;; 在非Linux平台上初始化use-package
 (unless (package-installed-p 'use-package)
+  (unless package-archive-contents
+    (package-refresh-contents))
   (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+(setq use-package-expand-minimally t)
 
 ;; 指令日志（注释掉了）
 ;; (use-package command-log-mode)
