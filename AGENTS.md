@@ -1,206 +1,29 @@
-# AGENTS.md
+# Repository Guidelines
 
-## Repository Purpose
+## Project Structure & Module Organization
 
-This repository contains a personal Emacs configuration optimized for:
+`init.el` is the entry point and should stay thin: it loads core modules and defers optional ones. Put startup-only tweaks in `early-init.el`, and keep shared defaults in `custom-vars.el`. Add new behavior under `lisp/`, grouped by concern: `lisp/lang/` for language support, `lisp/tools/` for integrations, `lisp/text/` for writing modes, and `lisp/misc/` for helpers. Treat `elpa/` as installed package content; avoid editing it unless you are intentionally debugging or vendoring upstream code.
 
-- terminal usage
-- fast startup
-- programming in C and Python
-- modular configuration
+## Build, Test, and Development Commands
 
-Agents modifying this repository should prioritize maintainability,
-clarity, and performance.
+- `emacs --batch -l init.el` - smoke test that the configuration loads without startup errors.
+- `emacs --debug-init` - start Emacs with backtraces enabled; use this after changing hooks, package setup, or startup order.
+- `git diff --stat` - confirm the change stays scoped to the intended modules before opening a PR.
 
----
+This repo is meant to live at `~/.emacs.d`, so run commands from that location or an equivalent symlinked checkout.
 
-# Configuration Philosophy
+## Coding Style & Naming Conventions
 
-The configuration follows several principles:
+Use Emacs Lisp with standard file headers and `lexical-binding: t`. Follow default Emacs indentation (typically 2 spaces) and keep `use-package` blocks aligned by keyword. Name modules `init-<topic>.el` and prefer repository-local prefixes such as `my/` for new functions and variables. Favor lazy loading with `:hook`, `:commands`, `:bind`, or idle timers over eager `require` calls in `init.el`.
 
-1. Keep `init.el` minimal
-2. Prefer modular configuration
-3. Use `use-package` for package management
-4. Avoid loading packages during startup unless required
-5. Prefer lazy loading
-6. Maintain terminal compatibility
+## Testing Guidelines
 
-Startup performance is important.
+There is no dedicated `tests/` directory, so each change needs a load test plus a manual smoke check in the affected mode. Reproduce regressions in a fresh Emacs session, apply the fix, then rerun the same workflow. If a change depends on external tools such as Pyright or Jupyter, note that in the change description.
 
----
+## Commit & Pull Request Guidelines
 
-# Repository Structure
+Recent history favors short, imperative subjects, usually with prefixes like `perf:`, `fix:`, or `feat:`. Keep commits focused on one logical change and mention the touched module when helpful, for example `perf: defer init-projectile loading`. PRs should describe the user-visible effect, list verification steps, and call out any startup or performance impact. Add screenshots only for UI-facing changes such as theme, modeline, or window behavior.
 
-The repository follows a modular structure.
+## Configuration Tips
 
-init.el
-    Main entry point.
-
-early-init.el
-    Startup optimizations and UI settings.
-
-lisp/
-    Modular configuration files.
-
-Modules may include:
-
-lisp/ui.el
-lisp/editor.el
-lisp/programming.el
-lisp/keybindings.el
-
-Agents should place new functionality in modules under `lisp/`.
-
-Avoid expanding `init.el` unnecessarily.
-
----
-
-# Package Management
-
-This configuration uses:
-
-use-package
-
-Preferred pattern:
-
-(use-package package-name
-  :ensure t
-  :defer t)
-
-Agents should:
-
-- use lazy loading
-- avoid immediate `require`
-- avoid loading packages at startup
-
-Example:
-
-(use-package magit
-  :commands (magit-status)
-  :bind ("C-x g" . magit-status))
-
----
-
-# Performance Guidelines
-
-Emacs startup performance is important.
-
-Agents should:
-
-- defer packages
-- avoid synchronous operations
-- avoid unnecessary `require`
-
-Prefer:
-
-:commands  
-:hook  
-:bind  
-
-over immediate loading.
-
-Startup target:
-
-< 1 second in terminal mode.
-
----
-
-# Keybinding Philosophy
-
-Keybindings should follow standard Emacs conventions.
-
-Preferred patterns:
-
-C-c <letter>    user bindings  
-C-x <key>       standard command bindings
-
-Agents should avoid overriding core Emacs bindings.
-
----
-
-# Programming Environment
-
-Primary languages supported:
-
-- C
-- Python
-- Emacs Lisp
-
-Development tools may include:
-
-- lsp-mode or eglot
-- company
-- flycheck
-- project.el
-- magit
-
-Agents should integrate new packages with these tools.
-
----
-
-# LSP Configuration
-
-LSP should:
-
-- start only for supported modes
-- not run globally
-- use hooks
-
-Example:
-
-(add-hook 'python-mode-hook #'lsp-deferred)
-
-Agents should avoid starting LSP during Emacs startup.
-
----
-
-# Testing Configuration
-
-After modifying the configuration, agents should ensure:
-
-1. Emacs starts without errors
-2. Packages install correctly
-3. Keybindings do not conflict
-
-Basic test command:
-
-emacs --batch -l init.el
-
----
-
-# Allowed Changes
-
-Agents may:
-
-- add new packages
-- improve modularity
-- optimize startup performance
-- improve documentation
-
-Agents should avoid:
-
-- introducing heavy dependencies
-- loading packages eagerly
-- breaking terminal compatibility
-
----
-
-# Documentation
-
-If major configuration changes occur, agents should update:
-
-README.md
-
-to explain new behavior.
-
----
-
-# Commit Guidelines
-
-Commits should be small and descriptive.
-
-Examples:
-
-feat: add magit integration  
-perf: defer lsp-mode loading  
-fix: correct python lsp configuration
+Do not commit machine-specific secrets, transient Emacs state, or hard-coded personal paths unless they are guarded. Prefer checks such as `file-directory-p` or move local-only overrides into ignored files.
